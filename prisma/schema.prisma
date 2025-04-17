@@ -16,5 +16,51 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  groupUsers GroupUsers[] // This is the only connection to ChatGroup
+  chats      Chat[]
+
   @@map("users")
+}
+
+model ChatGroup {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  passcode    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  groupUsers GroupUsers[] // All members in the group
+  Chat       Chat[]
+
+  @@index([createdAt])
+  @@map("chat_groups")
+}
+
+model GroupUsers {
+  id       Int       @id @default(autoincrement())
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  group    ChatGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId  String
+  joinedAt DateTime  @default(now())
+  role     String? // Optional: admin, member, etc.
+
+  @@unique([userId, groupId]) // Prevent duplicates
+  @@map("group_users")
+}
+
+model Chat {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId  String
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  groupId String
+  group   ChatGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId, createdAt])
+  @@map("chats")
 }

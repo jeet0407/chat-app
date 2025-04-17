@@ -25,6 +25,7 @@ export default function SignInPage() {
       // Check response from signIn. If not OK or has an error message, show error.
       if (!res?.ok || res.error) {
         toast.error(res?.error || "Invalid credentials")
+        toast.error("Login failed")
         setIsLoading(false)
         return
       }
