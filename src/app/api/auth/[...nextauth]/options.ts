@@ -1,63 +1,134 @@
-import { AuthOptions, ISODateString } from "next-auth";
-import { JWT } from "next-auth/jwt";
+// authOptions.ts (server-side)
+import { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import prisma from '@/lib/prisma';
+import { DefaultSession } from "next-auth";
 
-export interface Session {
-  user?: User;
-  expires: ISODateString;
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+    } & DefaultSession["user"]
+  }
 }
 
-export interface User {
-  id?: string | null;
-  name?: string;
-  email?: string;
-  image?: string;
-  provider?: string | null;
-  token?: string | null;
-}
+export const authOptions : NextAuthOptions = {
+  providers : [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials : {
+        email : {label : "Email" , type : "email" , placeholder : "u@gmail.com"},
+        password : {label : "Password" , type : "password" , placeholder : "password"} ,
+      },
 
-export const authOption: AuthOptions = {
-  pages: {
-    signIn: "/",
-  },
+      async authorize(credentials){
+        if(!credentials?.email || !credentials?.password){
+          throw new Error("Please enter your email and password")
+        }
 
-  callbacks: {
-    async signIn({ user, account }) {
-      console.log("user", user);
-      console.log("account", account);
-      return true;
-    },
+        try{
+          const user = await prisma.user.findUnique({
+            where : { email : credentials.email },
+          });
 
-    async session({ session, token }: { session: any; token: JWT }) {
-      if (token?.user) {
-        session.user = token.user as User;
-      }
-      return session;
-    },
+          if(!user){
+            throw new Error("No user found with this email");
+          }
 
-    async jwt({ token, user }) {
-      if (user) {
-        token.user = user;
-      }
+          if(!user.password){
+            throw new Error("User has no password set");
+          }
 
-      return token;
-    },
-  },
+          const isPasswordValid = credentials.password === user.password;
 
-  providers: [
+          if(!isPasswordValid){
+            throw new Error("Invalid password");
+          }
+
+          return{
+            id: user.id.toString(),
+            email: user.email,
+            name: user.name,
+            image: user.image || null,
+          };
+        }
+        catch(error){
+          console.error("Authentication error: ", error);
+          throw new Error(error instanceof Error ? error.message : "Authentication error");
+        }
+      } 
+    }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_ID!,
-      clientSecret: process.env.GOOGLE_SECRET!,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
+      clientId: process.env.GOOGLE_ID as string,
+      clientSecret: process.env.GOOGLE_SECRET as string,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          email: profile.email,
+          name: profile.name,
+          profilePhotoUrl: profile.picture || null,
+        };
       },
     }),
   ],
 
-  secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development",
-};
+  pages : {
+    signIn : "/",
+    error: "/",
+  },
+
+  callbacks:{
+
+    async signIn({user , account , profile}){
+      if(account?.provider === "google"){
+        try{
+          const existingUser = await prisma.user.findUnique({
+            where : { email : user.email! },
+          });
+
+          if(!existingUser){
+            await prisma.user.create({
+              data : {
+                id : user.id,
+                email : user.email!,
+                name : user.name,
+                image : user.image || null,
+              },
+            });
+          }
+        }
+        catch(error){
+          console.error("Error creating user with google ", error);
+          return false;
+        }
+      }
+      return true;
+    },
+
+    async jwt({ token, user }){
+      if(user){
+        token.id = user.id;
+      }
+      return token;
+    },
+
+    async session({ session, token }){
+      if(token && session.user ){
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+
+    async redirect({ baseUrl }){
+      return baseUrl;
+    },
+  },
+
+  session:{
+    strategy : "jwt",
+    maxAge : 30 * 24 * 60 * 60, // 30 days
+  },
+  secret : process.env.NEXTAUTH_SECRET,
+  debug : process.env.NODE_ENV === "development",
+}

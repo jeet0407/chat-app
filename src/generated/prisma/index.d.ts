@@ -883,9 +883,8 @@ export namespace Prisma {
     id: string | null
     name: string | null
     email: string | null
-    provider: string | null
     image: string | null
-    oauth_id: string | null
+    password: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -894,9 +893,8 @@ export namespace Prisma {
     id: string | null
     name: string | null
     email: string | null
-    provider: string | null
     image: string | null
-    oauth_id: string | null
+    password: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -905,9 +903,8 @@ export namespace Prisma {
     id: number
     name: number
     email: number
-    provider: number
     image: number
-    oauth_id: number
+    password: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -918,9 +915,8 @@ export namespace Prisma {
     id?: true
     name?: true
     email?: true
-    provider?: true
     image?: true
-    oauth_id?: true
+    password?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -929,9 +925,8 @@ export namespace Prisma {
     id?: true
     name?: true
     email?: true
-    provider?: true
     image?: true
-    oauth_id?: true
+    password?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -940,9 +935,8 @@ export namespace Prisma {
     id?: true
     name?: true
     email?: true
-    provider?: true
     image?: true
-    oauth_id?: true
+    password?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1024,9 +1018,8 @@ export namespace Prisma {
     id: string
     name: string | null
     email: string
-    provider: string | null
     image: string | null
-    oauth_id: string
+    password: string | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -1052,9 +1045,8 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     email?: boolean
-    provider?: boolean
     image?: boolean
-    oauth_id?: boolean
+    password?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1063,9 +1055,8 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     email?: boolean
-    provider?: boolean
     image?: boolean
-    oauth_id?: boolean
+    password?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1074,9 +1065,8 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     email?: boolean
-    provider?: boolean
     image?: boolean
-    oauth_id?: boolean
+    password?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1085,14 +1075,13 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     email?: boolean
-    provider?: boolean
     image?: boolean
-    oauth_id?: boolean
+    password?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "provider" | "image" | "oauth_id" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "image" | "password" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
@@ -1101,9 +1090,8 @@ export namespace Prisma {
       id: string
       name: string | null
       email: string
-      provider: string | null
       image: string | null
-      oauth_id: string
+      password: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -1532,9 +1520,8 @@ export namespace Prisma {
     readonly id: FieldRef<"User", 'String'>
     readonly name: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
-    readonly provider: FieldRef<"User", 'String'>
     readonly image: FieldRef<"User", 'String'>
-    readonly oauth_id: FieldRef<"User", 'String'>
+    readonly password: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -1921,9 +1908,8 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     email: 'email',
-    provider: 'provider',
     image: 'image',
-    oauth_id: 'oauth_id',
+    password: 'password',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -2012,9 +1998,8 @@ export namespace Prisma {
     id?: StringFilter<"User"> | string
     name?: StringNullableFilter<"User"> | string | null
     email?: StringFilter<"User"> | string
-    provider?: StringNullableFilter<"User"> | string | null
     image?: StringNullableFilter<"User"> | string | null
-    oauth_id?: StringFilter<"User"> | string
+    password?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
   }
@@ -2023,9 +2008,8 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrderInput | SortOrder
     email?: SortOrder
-    provider?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
-    oauth_id?: SortOrder
+    password?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -2037,9 +2021,8 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     name?: StringNullableFilter<"User"> | string | null
-    provider?: StringNullableFilter<"User"> | string | null
     image?: StringNullableFilter<"User"> | string | null
-    oauth_id?: StringFilter<"User"> | string
+    password?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
   }, "id" | "email">
@@ -2048,9 +2031,8 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrderInput | SortOrder
     email?: SortOrder
-    provider?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
-    oauth_id?: SortOrder
+    password?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -2065,9 +2047,8 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"User"> | string
     name?: StringNullableWithAggregatesFilter<"User"> | string | null
     email?: StringWithAggregatesFilter<"User"> | string
-    provider?: StringNullableWithAggregatesFilter<"User"> | string | null
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
-    oauth_id?: StringWithAggregatesFilter<"User"> | string
+    password?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -2076,9 +2057,8 @@ export namespace Prisma {
     id?: string
     name?: string | null
     email: string
-    provider?: string | null
     image?: string | null
-    oauth_id: string
+    password?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -2087,9 +2067,8 @@ export namespace Prisma {
     id?: string
     name?: string | null
     email: string
-    provider?: string | null
     image?: string | null
-    oauth_id: string
+    password?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -2098,9 +2077,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
-    provider?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    oauth_id?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2109,9 +2087,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
-    provider?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    oauth_id?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2120,9 +2097,8 @@ export namespace Prisma {
     id?: string
     name?: string | null
     email: string
-    provider?: string | null
     image?: string | null
-    oauth_id: string
+    password?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -2131,9 +2107,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
-    provider?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    oauth_id?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2142,9 +2117,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
-    provider?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    oauth_id?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2199,9 +2173,8 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     email?: SortOrder
-    provider?: SortOrder
     image?: SortOrder
-    oauth_id?: SortOrder
+    password?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -2210,9 +2183,8 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     email?: SortOrder
-    provider?: SortOrder
     image?: SortOrder
-    oauth_id?: SortOrder
+    password?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -2221,9 +2193,8 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     email?: SortOrder
-    provider?: SortOrder
     image?: SortOrder
-    oauth_id?: SortOrder
+    password?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
