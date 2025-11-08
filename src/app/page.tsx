@@ -4,7 +4,7 @@ export default function Page() {
 
   return (
     <>
-      <Navbar />
+      <Navbar /> //chk chk
     </>
   );
 }
