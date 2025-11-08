@@ -25,7 +25,6 @@ export default function SignInPage() {
       // Check response from signIn. If not OK or has an error message, show error.
       if (!res?.ok || res.error) {
         toast.error(res?.error || "Invalid credentials")
-        toast.error("Login failed")
         setIsLoading(false)
         return
       }
@@ -39,7 +38,6 @@ export default function SignInPage() {
           error instanceof Error ? error.message : "Something went wrong"
         }`
       )
-    } finally {
       setIsLoading(false)
     }
   }
@@ -77,12 +75,7 @@ export default function SignInPage() {
 
         <hr className="my-4" />
 
-        <button
-          onClick={() => signIn("google", { callbackUrl: "/" })}
-          className="flex items-center justify-center w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors duration-200"
-        >
-          Sign In with Google
-        </button>
+        
       </div>
     </div>
   )

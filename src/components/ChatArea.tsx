@@ -176,7 +176,7 @@ export default function ChatArea({
 <div className="bg-gray-100 p-1 text-xs text-gray-600 border-b">
   <p>Socket ID: {socketDebug.id || 'Not connected'}</p>
   <p>Status: {isConnected ? '✅ Connected' : '❌ Disconnected'}</p>
-  <p>Connection confirmed: {socketDebug.connectionConfirmed ? '✅ Yes' : '❌ No'}</p>
+  {/* <p>Connection confirmed: {socketDebug.connectionConfirmed ? '✅ Yes' : '❌ No'}</p> */}
 </div>
 
 
@@ -238,7 +238,7 @@ export default function ChatArea({
       </div>
 
       {/* Message Input */}
-      <div className="border-t bg-white p-4">
+      <div className="border-t bg-white p-4 text-black">
         <form onSubmit={handleSendMessage} className="flex">
           <input
             type="text"

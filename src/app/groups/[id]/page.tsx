@@ -167,7 +167,7 @@ export default function GroupChatPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen max-h-screen bg-gray-50">
+    <div className="flex flex-col h-screen max-h-screen bg-gray-50 text-black">
       {/* Header */}
       <div className="bg-white border-b p-4 flex justify-between items-center">
         <div className="flex items-center">
