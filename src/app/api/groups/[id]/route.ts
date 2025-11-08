@@ -1,22 +1,24 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/options";
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import prisma from '@/lib/prisma';
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const groupId = params.id;
+    // Extract groupId safely, ensuring it's a string
+    const groupId = String(params.id);
     
     const session = await getServerSession(authOptions);
 
-    if (!session?.user) {
-      return NextResponse.json({ message: "unauthorized" }, { status: 401 });
+    // Check if user is authenticated
+    if (!session || !session.user) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-
+    // Check if the group exists
     const group = await prisma.chatGroup.findUnique({
       where: { id: groupId },
       include: {
@@ -27,7 +29,10 @@ export async function GET(
     });
 
     if (!group) {
-      return NextResponse.json({ message: "Group not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "Group not found" },
+        { status: 404 }
+      );
     }
 
     // Check if the user is a member of the group
@@ -47,6 +52,7 @@ export async function GET(
       );
     }
 
+    // Return group details with member role and count
     return NextResponse.json({
       ...group,
       role: membership.role,

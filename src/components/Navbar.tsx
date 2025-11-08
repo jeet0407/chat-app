@@ -28,6 +28,10 @@ export default async function Navbar() {
       <div className="bg-blue-500 px-4 py-2 rounded m-6">
         <Link href="/dashboard">Dashboard</Link>
       </div>
+
+      <div className="bg-yellow-500 px-4 py-2 rounded m-6">
+        <Link href="/groups">Groups</Link>
+      </div>
     </div>
   );
 }

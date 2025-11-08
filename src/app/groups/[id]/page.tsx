@@ -1,18 +1,16 @@
-"use client"
+"use client";
 
+import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
 import ChatArea from "@/components/ChatArea";
-import { formatDistanceToNow } from "date-fns";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useSocket } from "@/components/SocketProvider";
 
 interface Message {
   id: string;
-  userId: string;
-  senderId: string;
-  groupId: string;
   content: string;
+  userId: string;
+  groupId: string;
   createdAt: string;
-
   user: {
     id: string;
     name: string | null;
@@ -23,37 +21,35 @@ interface Message {
 interface Group {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   memberCount: number;
 }
 
 interface SessionUser {
-    id: string;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-  }
-  
-  interface SessionData {
-    user?: SessionUser | null;
-    expires?: string;
-  }
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+}
 
-export default function GroupPage() {
+interface SessionData {
+  user?: SessionUser | null;
+  expires?: string;
+}
 
-    const params = useParams();
-    const groupId = params.id as string;
-
+export default function GroupChatPage() {
+  const params = useParams();
+  const groupId = params.id as string;
   const router = useRouter();
+  const { socket, isConnected } = useSocket();
   const [sessionData, setSessionData] = useState<SessionData | null>(null);
-  const [checkSession, setSessionChecked] = useState(false);
   const [group, setGroup] = useState<Group | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState("");
 
+  // Check session and load initial data
   useEffect(() => {
     const checkSession = async () => {
       try {
@@ -63,74 +59,67 @@ export default function GroupPage() {
         if (!session?.user) {
           router.push("/signIn");
         } else {
-        setSessionData(session);
-          fetchGroupDetails(groupId);
-          fetchMessages(groupId);
+          setSessionData(session);
+          await fetchGroupDetails();
+          await fetchMessages();
         }
       } catch (error) {
         console.error("Error checking session: ", error);
-        router.push("/signIn");
+        setError("Error checking authentication. Please try again.");
       } finally {
-        setSessionChecked(true);
+        setLoading(false);
       }
     };
 
-    if(groupId){
-        checkSession();
-    }
-
+    checkSession();
   }, [groupId, router]);
 
-  const fetchGroupDetails = async (id : string) => {
+  // Fetch group details
+  const fetchGroupDetails = async () => {
     try {
-      const response = await fetch(`/api/groups/${id}`);
-
+      const response = await fetch(`/api/groups/${groupId}`);
+      
       if (!response.ok) {
         if (response.status === 404) {
           router.push("/groups");
           return;
         }
-
-        if (response.status === 403) {
-          setError("You don't have permission to view this group");
-          return;
-        }
-
         throw new Error("Failed to fetch group details");
       }
-
+      
       const data = await response.json();
       setGroup(data);
     } catch (error) {
       console.error("Error fetching group details:", error);
-      setError("Error loading group details. Please try again.");
+      setError("Error loading group. Please try again.");
     }
   };
 
-  const fetchMessages = async (id : string ) => {
+  // Fetch messages
+  const fetchMessages = async () => {
     try {
-      setLoading(true);
-      const response = await fetch(`/api/groups/${id}/messages`);
-
+      const response = await fetch(`/api/groups/${groupId}/messages`);
+      
       if (!response.ok) {
         throw new Error("Failed to fetch messages");
       }
-
+      
       const data = await response.json();
       setMessages(data);
     } catch (error) {
       console.error("Error fetching messages:", error);
       setError("Error loading messages. Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
 
+  // Send a new message
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
-
+    
+    if (!newMessage.trim() || !sessionData?.user || !socket) return;
+    
     try {
+      // Save the message to the database
       const response = await fetch(`/api/groups/${groupId}/messages`, {
         method: "POST",
         headers: {
@@ -138,22 +127,27 @@ export default function GroupPage() {
         },
         body: JSON.stringify({ content: newMessage }),
       });
-
+      
       if (!response.ok) {
         throw new Error("Failed to send message");
       }
-
-      const msg = await response.json();
-      setMessages((prevMessages) => [...prevMessages, msg]);
+      
+      // Get the saved message
+      const message = await response.json();
+      
+      // Emit the message to all clients via socket
+      socket.emit("new_message", message);
+      
+      // Clear the input
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
-      setError("Error sending message. Please try again.");
+      setError("Failed to send message. Please try again.");
     }
   };
 
-  if (!groupId || !setSessionChecked || (loading && !group)) {
-    return <div className="text-center p-6">Loading group...</div>;
+  if (loading) {
+    return <div className="flex h-screen items-center justify-center">Loading...</div>;
   }
 
   if (error) {
@@ -162,14 +156,12 @@ export default function GroupPage() {
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
           {error}
         </div>
-        <div className="mt-4">
-          <button 
-            onClick={() => router.push("/groups")}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Back to Groups
-          </button>
-        </div>
+        <button 
+          onClick={() => router.push("/groups")}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Back to Groups
+        </button>
       </div>
     );
   }
@@ -187,23 +179,22 @@ export default function GroupPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h1 className="text-xl text-black font-semibold">{group?.name}</h1>
+          <h1 className="text-xl font-semibold">{group?.name}</h1>
         </div>
-        <button
-          onClick={() => {/* Show members list */}}
-          className="text-blue-600 text-sm hover:underline"
-        >
-          {group?.memberCount || 0} members
-        </button>
+        <div className="flex items-center">
+          <span className={`inline-block h-2 w-2 rounded-full mr-2 ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></span>
+          <span className="text-sm text-gray-500">{isConnected ? "Connected" : "Disconnected"}</span>
+        </div>
       </div>
 
       {/* Chat Area Component */}
       <ChatArea
-        messages={messages}
+        initialMessages={messages}
         session={sessionData}
         newMessage={newMessage}
         setNewMessage={setNewMessage}
         handleSendMessage={handleSendMessage}
+        groupId={groupId}
       />
     </div>
   );
